@@ -1,0 +1,6 @@
+location: 'Singapore'
+step: 2m
+gridCI: 500
+memCoeff: 0.000392
+netCoeff: 0.001
+cpu_model: Apple M2

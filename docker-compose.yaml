@@ -1,15 +1,29 @@
-version: "3.9"
+version: '3.9'
 
 services:
+  carbotel:
+    build: .
+    container_name: carbotel
+    volumes:
+      - ./carbotel-config.yaml:/app/carbotel-config.yaml:ro
+    depends_on:
+      - pushGateway
+      - otel-collector
+      - prometheus
+    restart: unless-stopped
+    environment:
+      - PUSHGATEWAY_URL=http://pushGateway:9091
+      - PROMETHEUS_URL=http://prometheus:9090
+
   otel-collector:
     image: otel/opentelemetry-collector:latest
     container_name: otel-collector
     volumes:
       - ./otel-config.yaml:/etc/otelcol/config.yaml
     ports:
-      - "8889:8889"  # Prometheus scrape port
+      - '8889:8889'
     command:
-      - "--config=/etc/otelcol/config.yaml"
+      - '--config=/etc/otelcol/config.yaml'
 
   prometheus:
     image: prom/prometheus:latest
@@ -19,4 +33,10 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
     ports:
-      - "9090:9090"
+      - '9090:9090'
+
+  pushGateway:
+    image: prom/pushgateway
+    container_name: prom_pushgateway
+    ports:
+      - '9091:9091'
